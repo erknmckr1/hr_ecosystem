@@ -25,8 +25,7 @@ const groups = [
     icon: <User className="w-5 h-5" />,
     items: [
       { label: "Personel Kayıt", href: "/personel-islemleri/kayit" },
-      { label: "Personel Güncelle", href: "/personel-islemleri/guncelle" },
-      { label: "Personel Listesi", href: "/personel-islemleri" },
+      { label: "Personel Listesi", href: "/personel-islemleri/liste" },
     ],
   },
 ] as const;
