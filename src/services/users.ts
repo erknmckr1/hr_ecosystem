@@ -1,4 +1,5 @@
 export type User = {
+  id:number;
   id_dec: number;
   id_hex: string;
   op_name: string;
@@ -43,8 +44,11 @@ export const createUser = async (user: User): Promise<User> => {
 
 export const updateUser = async (id: number, user: User): Promise<User> => {
   const res = await api.put<User>(`/users/${id}`, user);
+  console.log(res)
   return res.data;
 };
+
+
 
 export const deleteUser = async (id: number): Promise<void> => {
   await api.delete(`/users/${id}`);
