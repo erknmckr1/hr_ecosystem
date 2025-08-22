@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/select";
 import { sections } from "@/data/staticData";
 import { sectionParts } from "@/data/staticData";
-import { Input } from "@/components/ui/input";
 import { useFormContext, useWatch } from "react-hook-form";
 function Step3_RoleInfo() {
   const form = useFormContext();

@@ -2,6 +2,8 @@
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
+import { Toaster } from "@/components/ui/sonner";
+
 export default function RootLayout({
   children,
 }: {
@@ -17,6 +19,7 @@ export default function RootLayout({
             {children}
           </main>
         </div>
+              <Toaster position="top-center" />
       </body>
     </html>
   );

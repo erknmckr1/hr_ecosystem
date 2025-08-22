@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model operator_table {
+  id_dec          String? @db.NVarChar(255)
+  id_hex          String   @db.NVarChar(255)
+  op_name         String?  @db.NVarChar(255)
+  op_username     String?  @db.NVarChar(255)
+  is_active       Int?     @db.TinyInt
+  is_admin        Int?     @db.TinyInt
+  op_password     String?  @db.NVarChar(255)
+  op_section      String?  @db.NVarChar(255)
+  part            String?  @db.NVarChar(255)
+  title           String?  @db.NVarChar(255)
+  auth2           String?  @db.NVarChar(Max)
+  auth1           String?  @db.NVarChar(Max)
+  address         String?  @db.NVarChar(255)
+  e_mail          String?  @db.NVarChar(255)
+  shift_validator String?  @db.NVarChar(255)
+  gender          String?  @db.NVarChar(255)
+  short_name      String?  @db.NVarChar(255)
+  route           String?  @db.NVarChar(255)
+  stop_name       String?  @db.NVarChar(255)
+  izin_bakiye     Decimal? @db.Decimal(10, 2)
+  is_approver     Int?     @db.TinyInt
+  roleId          Int?
+  roles           roles?   @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__operator___roleI__15C52FC4")
+
+  @@id([id_dec, id_hex], map: "PK__operator__B884C596EA294F83")
+}
+
