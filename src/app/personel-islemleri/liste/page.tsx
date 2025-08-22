@@ -13,11 +13,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-// shadcn Dialog importları
+
 import {
   Dialog,
   DialogContent,
@@ -27,6 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
+
 export default function PersonelListesiPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,6 +35,7 @@ export default function PersonelListesiPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [formData, setFormData] = useState<User | null>(null);
+  console.log(selectedUser);
 
   useEffect(() => {
     if (selectedUser) {
@@ -45,6 +46,7 @@ export default function PersonelListesiPage() {
   const handleChange = (field: keyof User, value: any) => {
     setFormData((prev) => (prev ? { ...prev, [field]: value } : prev));
   };
+ 
 
   useEffect(() => {
     const load = async () => {
@@ -70,40 +72,41 @@ export default function PersonelListesiPage() {
     .filter((u) => {
       const query = normalizeText(search);
       return (
-        normalizeText(u.op_name).includes(query) ||
-        normalizeText(u.op_section).includes(query) ||
-        normalizeText(u.op_username).includes(query) ||
-        normalizeText(u.e_mail).includes(query) ||
-        normalizeText(u.part).includes(query) ||
-        normalizeText(u.title).includes(query)
+        normalizeText(u.op_name || "").includes(query) ||
+        normalizeText(u.op_section || "").includes(query) ||
+        normalizeText(u.op_username || "").includes(query) ||
+        normalizeText(u.e_mail || "").includes(query) ||
+        normalizeText(u.part || "").includes(query) ||
+        normalizeText(u.title || "").includes(query)
       );
     })
-    .sort((a, b) => a.op_name.localeCompare(b.op_name, "tr"));
+    .sort((a, b) => (a.op_name  || "").localeCompare(b.op_name || "", "tr"));
 
   const handleRowClick = (user: User) => {
-    setSelectedUser((prev) => (prev?.id === user.id ? null : user));
+  if (selectedUser?.id_dec === user.id_dec) {
     setIsPopupOpen(true);
-  };
-
+  } else {
+    setSelectedUser(user);
+    setFormData(user);
+  }
+};
 console.log(formData)
 const handleSave = async () => {
   if (!formData) return;
-
   try {
-    const updated = await updateUser(formData.id, formData);
+    const updated = await updateUser(formData);
     
     setUsers((prev) =>
-      prev.map((u) => (u.id=== updated.id ? updated : u))
+      prev.map((u) => (u.id_dec=== updated.id_dec? updated : u))
     );
-
     setIsPopupOpen(false);
     setSelectedUser(null);
+    setFormData(null);
   } catch (err) {
     console.error("Güncelleme hatası:", err);
     alert("Güncelleme sırasında hata oluştu!");
   }
 };
-
 
   return (
     <div className=" p-6 w-full">
@@ -124,57 +127,37 @@ const handleSave = async () => {
                 <TableHead>ID (HEX)</TableHead>
                 <TableHead>Ad Soyad</TableHead>
                 <TableHead>Kullanıcı Adı</TableHead>
-                <TableHead>Admin mi?</TableHead>
                 <TableHead>Bölüm</TableHead>
                 <TableHead>Part</TableHead>
                 <TableHead>Ünvan</TableHead>
-                <TableHead>Auth2</TableHead>
-                <TableHead>Auth1</TableHead>
                 <TableHead>Adres</TableHead>
                 <TableHead>E-Posta</TableHead>
-                <TableHead>Shift Validator</TableHead>
                 <TableHead>Rota</TableHead>
                 <TableHead>Durak</TableHead>
                 <TableHead>İzin Bakiye</TableHead>
-                <TableHead>Onaylayıcı mı?</TableHead>
+              
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredUsers.map((u) => (
                 <TableRow
-                  key={u.id_dec}
+                  key={`${u.id_dec}-${u.id_hex}`}
                   onClick={() => handleRowClick(u)}
-                  className={`cursor-pointer transition-colors ${
-                    selectedUser?.id_dec === u.id_dec
-                      ? "bg-blue-100 border-2 border-blue-400"
-                      : ""
-                  }`}
-                >
+                  className={`cursor-pointer transition-colors ${ selectedUser?.id_dec === u.id_dec 
+                     ? "bg-blue-100 border-2 border-blue-400" : "" }`} >
                   <TableCell>{u.id_dec}</TableCell>
                   <TableCell>{u.id_hex}</TableCell>
                   <TableCell>{u.op_name}</TableCell>
                   <TableCell>{u.op_username}</TableCell>
-                  <TableCell>
-                    <Badge variant={u.is_admin ? "default" : "secondary"}>
-                      {u.is_admin ? "Evet" : "Hayır"}
-                    </Badge>
-                  </TableCell>
                   <TableCell>{u.op_section}</TableCell>
                   <TableCell>{u.part}</TableCell>
                   <TableCell>{u.title}</TableCell>
-                  <TableCell>{u.auth2 ?? "-"}</TableCell>
-                  <TableCell>{u.auth1 ?? "-"}</TableCell>
                   <TableCell>{u.address}</TableCell>
                   <TableCell>{u.e_mail}</TableCell>
-                  <TableCell>{u.shift_validator}</TableCell>
                   <TableCell>{u.route}</TableCell>
                   <TableCell>{u.stop_name}</TableCell>
                   <TableCell>{u.izin_bakiye}</TableCell>
-                  <TableCell>
-                    <Badge variant={u.is_approver ? "default" : "secondary"}>
-                      {u.is_approver ? "Evet" : "Hayır"}
-                    </Badge>
-                  </TableCell>
+
                 </TableRow>
               ))}
             </TableBody>
@@ -198,6 +181,7 @@ const handleSave = async () => {
             </div>
           </div>
         </Card>
+        
 
         {/* Shadcn Dialog */}
         <Dialog open={isPopupOpen} onOpenChange={setIsPopupOpen}>
@@ -211,7 +195,7 @@ const handleSave = async () => {
                 <label className="block text-sm font-medium">Ad Soyad</label>
                 <Input
                   type="text"
-                  value={formData.op_name}
+                  value={formData.op_name || ""}
                   onChange={(e) => handleChange("op_name", e.target.value)}
                 />
 
@@ -220,20 +204,20 @@ const handleSave = async () => {
                 </label>
                 <Input
                   type="text"
-                  value={formData.op_username}
+                  value={formData.op_username || ""}
                   onChange={(e) => handleChange("op_username", e.target.value)}
                 />
 
                 <label className="block text-sm font-medium">E-Posta</label>
                 <Input
                   type="email"
-                  value={formData.e_mail}
+                  value={formData.e_mail || ""}
                   onChange={(e) => handleChange("e_mail", e.target.value)}
                 />
 
                 <label className="block text-sm font-medium">Bölüm</label>
                 <select
-                  value={formData.op_section}
+                  value={formData.op_section || ""}
                   onChange={(e) => handleChange("op_section", e.target.value)}
                   className="w-full border px-2 py-1 rounded"
                 >
@@ -264,7 +248,7 @@ const handleSave = async () => {
 
                 <label className="block text-sm font-medium">Ünvan</label>
                 <select
-                  value={formData.title}
+                  value={formData.title || ""}
                   onChange={(e) => handleChange("title", e.target.value)}
                   className="w-full border px-2 py-1 rounded"
                 >
@@ -274,33 +258,34 @@ const handleSave = async () => {
                       {t.name}
                     </option>
                   ))}
+
                 </select>
 
                 <label className="block text-sm font-medium">Adres</label>
                 <Input
                   type="text"
-                  value={formData.address}
+                  value={formData.address || ""}
                   onChange={(e) => handleChange("address", e.target.value)}
                 />
 
                 <label className="block text-sm font-medium">Rota</label>
                 <Input
                   type="text"
-                  value={formData.route}
+                  value={formData.route || ""}
                   onChange={(e) => handleChange("route", e.target.value)}
                 />
 
                 <label className="block text-sm font-medium">Durak</label>
                 <Input
                   type="text"
-                  value={formData.stop_name}
+                  value={formData.stop_name || ""}
                   onChange={(e) => handleChange("stop_name", e.target.value)}
                 />
 
                 <label className="block text-sm font-medium">İzin Bakiye</label>
                 <Input
                   type="number"
-                  value={formData.izin_bakiye}
+                  value={formData.izin_bakiye || ""}
                   onChange={(e) =>
                     handleChange("izin_bakiye", Number(e.target.value))
                   }
@@ -318,6 +303,9 @@ const handleSave = async () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+
+        
       </div>
     </div>
   );
