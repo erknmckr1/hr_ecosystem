@@ -53,10 +53,10 @@ export const sections = [
       "MekanikAltin",
       "Ocak",
       "Pres",
-      "Tasarim",
+      "Tasarım",
       "Taslama",
       "Tel/AstarCekme",
-      "telcekme",
+      "Telçekme",
       "Tezgah/Fantezi",
       "YanDestek"
     ]
@@ -70,14 +70,14 @@ export const sections = [
       "Metalurji",
       "MKP",
       "Montaj",
-      "Uretim",
-      "UretimPlanlama"
+      "Üretim",
+      "ÜretimPlanlama"
     ]
   },
   {
     section: "Ar-Ge",
     parts: [
-      "Bakim",
+      "Bakım",
       "Kalite Kontrol",
       "Laboratuvar",
       "Teknik Satınalma Uzmanı"
@@ -86,8 +86,8 @@ export const sections = [
   {
     section: "Teknik",
     parts: [
-      "Bakim",
-      "Kaliphane",
+      "Bakım",
+      "Kalıphane",
       "Teknik"
     ]
   },
@@ -100,26 +100,26 @@ export const sections = [
   {
     section: "IdariIsler",
     parts: [
-      "Guvenlik",
-      "IdariIsler",
+      "Güvenlik",
+      "İdariİşler",
       "Santral",
       "Temizlik",
-      "Ulasim",
-      "YoneticiAsistani"
+      "Ulaşım",
+      "YöneticiAsistani"
     ]
   },
   {
     section: "IhracatvePazarlama",
     parts: [
-      "IhracatvePazarlama",
+      "İhracatvePazarlama",
       "Paketleme"
     ]
   },
   {
-    section: "InsanKaynaklari",
+    section: "İnsanKaynaklari",
     parts: [
-      "InsanKaynaklari",
-      "IsSaglıgıVeGuvenlıgı",
+      "İnsanKaynakları",
+      "İşSağlıgıVeGüvenliği",
       "Kalite",
       "SaglikBirimi"
     ]
@@ -164,13 +164,13 @@ export const sections = [
     ]
   },
   {
-    section: "Satinalma",
+    section: "Satınalma",
     parts: [
       "Satinalma"
     ]
   },
   {
-    section: "Tasarim",
+    section: "Tasarım",
     parts: [
       "Tasarim",
       "TasarimTezgah"
