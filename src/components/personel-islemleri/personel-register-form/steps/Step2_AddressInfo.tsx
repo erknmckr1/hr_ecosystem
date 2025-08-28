@@ -52,13 +52,14 @@ function Step2_AddressInfo() {
 
           <FormField
             control={form.control}
-            name="email"
+            name="e_mail"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>E-Mail</FormLabel>
                 <FormControl>
                   <Input placeholder="E-Mail" {...field} />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -91,7 +92,7 @@ function Step2_AddressInfo() {
           />
           <FormField
             control={form.control}
-            name="route"
+            name="stop_name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Durak İsmi</FormLabel>

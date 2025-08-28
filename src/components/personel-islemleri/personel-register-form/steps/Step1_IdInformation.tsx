@@ -23,7 +23,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { titles } from "@/data/staticData";
+import { titles } from "@/lib/data/staticData";
 
 function Step1_IdInformation() {
   const form = useFormContext();
