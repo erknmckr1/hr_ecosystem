@@ -20,8 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { sections } from "@/data/staticData";
-import { sectionParts } from "@/data/staticData";
+import { sections } from "@/lib/data/staticData";
+import { sectionParts } from "@/lib/data/staticData";
 import { useFormContext, useWatch } from "react-hook-form";
 function Step3_RoleInfo() {
   const form = useFormContext();

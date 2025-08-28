@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/dbInstance";
+import {prisma} from "@/lib/dbInstance";
 import { User } from "@/services/users";
 // MSSQL'deki user tablosundan tüm kayıtları al
 export async function GET() {
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
 
     const createdUser = await prisma.operator_table.create({
       data: {
-        id_dec: data.id_dec.toString(),
+        id_dec: data.id_dec,
         id_hex: data.id_hex,
         op_name: data.op_name,
         op_username: data.op_username,
