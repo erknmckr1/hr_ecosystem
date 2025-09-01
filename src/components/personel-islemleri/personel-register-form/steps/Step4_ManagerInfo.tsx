@@ -63,7 +63,7 @@ function Step4_ManagerInfo() {
 
           <FormField
             control={form.control}
-            name="gender"
+            name="roleId"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Role</FormLabel>
@@ -77,9 +77,9 @@ function Step4_ManagerInfo() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Role 1">Role 1</SelectItem>
-                    <SelectItem value="Role 2">Role 2</SelectItem>
-                    <SelectItem value="Role 3">Role 3</SelectItem>
+                    <SelectItem value="1">Role 1</SelectItem>
+                    <SelectItem value="2">Role 2</SelectItem>
+                    <SelectItem value="3">Role 3</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />

@@ -2,27 +2,35 @@
 import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { personelFormConfig as steps } from "./stepsConfig";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, type FieldPath } from "react-hook-form";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { createUser, type User } from "@/services/users";
+import { toast } from "sonner";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { Resolver } from "react-hook-form";
+import { userSchema, type UserFormSchema } from "../../../../schemas/userSchema";
 
-// step components
 import Step1_IdInformation from "./steps/Step1_IdInformation";
 import Step2_AddressInfo from "./steps/Step2_AddressInfo";
 import Step3_RoleInfo from "./steps/Step3_RoleInfo";
 import Step4_ManagerInfo from "./steps/Step4_ManagerInfo";
+
+
 const stepComponents = {
   Step1_IdInformation,
   Step2_AddressInfo,
   Step3_RoleInfo,
-  Step4_ManagerInfo
+  Step4_ManagerInfo,
 } as const;
+
 
 export default function PersonelFormStepManager() {
   const [currentStep, setCurrentStep] = useState(0);
 
   // Controlled alanlar için güvenli defaultlar
-  const methods = useForm({
-    defaultValues: {
+  const methods = useForm<User>({
+      resolver: zodResolver(userSchema) as Resolver<User>,
+     defaultValues: {
       id_dec: "",
       id_hex: "",
       short_name: "",
@@ -31,21 +39,22 @@ export default function PersonelFormStepManager() {
       op_username: "",
       op_password: "",
       address: "",
-      email: "",
+      e_mail: "",
       route: "",
       stop_name: "",
       part: "",
-      title:"",
+      title: "",
       op_section: "",
-      is_admin: "",
-      is_active: "",
-      is_approver: "",
+      is_admin: 0,
+      is_active: 1,
+      is_approver: 0,
       shift_validator: "",
       auth1: "",
       auth2: "",
-      izin_bakiye: "",
+      izin_bakiye: 0,
+      roleId: 0
     },
-    mode: "onSubmit", // adım geçişinde trigger kullanacağız
+    mode: "all",
   });
 
   const { handleSubmit, trigger } = methods;
@@ -56,9 +65,12 @@ export default function PersonelFormStepManager() {
   const progress = Math.round(((currentStep + 1) / totalSteps) * 100);
   const fieldsForStep = useMemo(() => steps[currentStep].fields, [currentStep]);
 
-  // İLERİ: sadece bu adımın alanlarını doğrula
+
   const handleNextStep = async () => {
-    const ok = await trigger(fieldsForStep as any, { shouldFocus: true });
+  const ok = await trigger([...(fieldsForStep)] as FieldPath<User>[], {
+    shouldFocus: true,
+  });
+  console.log("a");
     if (!ok) return;
     if (currentStep < totalSteps - 1) setCurrentStep((s) => s + 1);
   };
@@ -67,15 +79,27 @@ export default function PersonelFormStepManager() {
     if (currentStep > 0) setCurrentStep((s) => s - 1);
   };
 
-  const onSubmit = (data: any) => {
-    console.log("Tüm form verileri:", data);
-    // TODO: API POST /employees
+  const onSubmit = async (data: User) => {
+    const user: User = {
+      id:0,
+      ...data,
+      roleId: Number(data.roleId),
+    };
+
+    try {
+      await createUser(user);
+      toast.success("Kullanıcı başarıyla kaydedildi!");
+      methods.reset();
+    } catch (err) {
+      console.error("Create error:", err);
+      toast.error("Kullanıcı kaydedilemedi!");
+    }
   };
 
   return (
     <FormProvider {...methods}>
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        // onSubmit={handleSubmit(onSubmit)}
         className="max-w-5xl mx-auto -h-full py-8 px-4 md:px-6"
       >
         {/* Header + Stepper */}
@@ -118,7 +142,9 @@ export default function PersonelFormStepManager() {
               </Button>
 
               {currentStep === totalSteps - 1 ? (
-                <Button type="submit">Kaydet</Button>
+                <Button onClick={handleSubmit(onSubmit)} type="button">
+                  Kaydet
+                </Button>
               ) : (
                 <Button type="button" onClick={handleNextStep}>
                   İleri
