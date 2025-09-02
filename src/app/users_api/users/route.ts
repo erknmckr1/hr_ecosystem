@@ -81,7 +81,7 @@ export async function DELETE(
 export async function POST(req: Request) {
   try {
     const data: User = await req.json();
-    console.log("POST body:", data);
+  
 
     const createdUser = await prisma.operator_table.create({
       data: {

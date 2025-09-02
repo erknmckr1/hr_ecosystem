@@ -35,7 +35,7 @@ export default function PersonelListesiPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [formData, setFormData] = useState<User | null>(null);
-  console.log(selectedUser);
+
 
   useEffect(() => {
     if (selectedUser) {
@@ -48,19 +48,6 @@ export default function PersonelListesiPage() {
   };
  
 
-/*   useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await getUsers();
-        setUsers(data);
-      } catch (err) {
-        setError("Veri alınırken hata oluştu.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []); */
 
 
   useEffect(() => {
@@ -108,7 +95,7 @@ export default function PersonelListesiPage() {
     setFormData(user);
   }
 };
-console.log(formData)
+
 const handleSave = async () => {
   if (!formData) return;
   try {

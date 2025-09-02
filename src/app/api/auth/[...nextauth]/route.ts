@@ -13,12 +13,9 @@ type AuthUser = {
 export const authOptions: NextAuthOptions = {
   session:  {
    strategy: "jwt",
-  maxAge: 15*60,
   },
 
-  jwt:{
-    maxAge: 15*60,
-  },
+  
 
 
   pages: { signIn: "/login" },
@@ -40,7 +37,7 @@ export const authOptions: NextAuthOptions = {
             id_hex: true,
             op_password: true,
             op_name: true,
-            op_username: true, // EKLENDİ: op_username hatasını çözer
+            op_username: true, 
             roleId: true,
           },
         });

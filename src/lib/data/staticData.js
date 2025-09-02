@@ -228,3 +228,59 @@ export const titles = [
 ];
 
 
+
+
+
+export const pages = [
+  {
+    label: "Ana Sayfa",
+    href: "/anasayfa",
+    icon: "",
+    desc: "Genel giriş sayfası",
+    id: "1",
+  },
+  {
+    label: "Kuru Tıraş",
+    href: "http://192.168.3.5:3000/uretim/makine/kurutiras",
+    icon: "",
+    desc: "Kuru Tıraş Ekranı",
+    id: "2",
+  },
+  {
+    label: "Tel Çekme Ekranı",
+    href: "http://192.168.3.5:3000/uretim/atolye/telcekme",
+    icon: "",
+    desc: "Tel Çekme Ekranı",
+    id: "3",
+  },
+  {
+    label: "Kalite Kontrol Ekranı",
+    href: "http://192.168.3.5:3000/uretim/montaj/kalite",
+    icon: "",
+    desc: "Kalite Kontrol Ekranı",
+    id: "4",
+  },
+  {
+    label: "İzin",
+    href: "http://192.168.3.5:3000/home/izin/izin",
+    icon: "",
+    desc: "İzin Oluşturma, Güncelleme",
+    id: "5",
+  },
+  {
+    label: "Taslama",
+    href: "http://192.168.3.5:3000/uretim/montaj/kalite",
+    icon: "",
+    desc: "Taslama Ekranı",
+    id: "6",
+  },
+  {
+    label: "Cila",
+    href: "http://192.168.3.5:3000/uretim/montaj/kalite",
+    icon: "",
+    desc: "Cila Ekranı",
+    id: "7",
+  },
+];
+
+
