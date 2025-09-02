@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 //import { getUsers, type User } from "@/services/users";//
-import { sections, sectionParts, titles } from "@/data/staticData";
+import { sections, sectionParts, titles } from "@/lib/data/staticData";
 import { getUsers, updateUser, type User } from "@/services/users";
 
 import {
@@ -48,7 +48,7 @@ export default function PersonelListesiPage() {
   };
  
 
-  useEffect(() => {
+/*   useEffect(() => {
     const load = async () => {
       try {
         const data = await getUsers();
@@ -60,7 +60,25 @@ export default function PersonelListesiPage() {
       }
     };
     load();
-  }, []);
+  }, []); */
+
+
+  useEffect(() => {
+  const load = async () => {
+    try {
+      const data = await getUsers();
+      setUsers(data);
+    } catch (err) {
+      console.error("Kullanıcıları çekerken hata oluştu:", err); // 🔴 hatayı konsola yaz
+      setError("Veri alınırken hata oluştu."); // ekranda basit mesaj
+    } finally {
+      setLoading(false);
+    }
+  };
+  load();
+}, []);
+
+
 
   if (loading) return <div className="p-4">Yükleniyor…</div>;
   if (error) return <div className="p-4 text-red-500">{error}</div>;

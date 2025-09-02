@@ -33,5 +33,6 @@ model operator_table {
   roles           roles?   @relation(fields: [roleId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK__operator___roleI__15C52FC4")
 
   @@id([id_dec, id_hex], map: "PK__operator__B884C596EA294F83")
+  @@unique([id_dec])
 }
 

@@ -92,7 +92,7 @@ function Step2_AddressInfo() {
           />
           <FormField
             control={form.control}
-            name="route"
+            name="stop_name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Durak İsmi</FormLabel>

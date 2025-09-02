@@ -1,9 +1,7 @@
-// src/app/layout.tsx
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
-import Header from "@/components/Header";
 import { Toaster } from "@/components/ui/sonner";
-
+import ConditionalLayout from "./ConditionalLayout";
+import { Providers } from "./Provider";
 export default function RootLayout({
   children,
 }: {
@@ -11,15 +9,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr">
-      <body className="min-h-dvh flex">
-        <Sidebar />
-        <div className="flex-1 ">
-          <Header />
-          <main className="min-h-[calc(100vh-80px)]  ">
-            {children}
-          </main>
-        </div>
-              <Toaster position="top-center" />
+      <body>
+        <Providers>
+          <ConditionalLayout>{children}</ConditionalLayout>
+          <Toaster position="top-center" />
+        </Providers>
       </body>
     </html>
   );

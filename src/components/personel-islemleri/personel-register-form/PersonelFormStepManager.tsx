@@ -8,7 +8,7 @@ import { createUser, type User } from "@/services/users";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Resolver } from "react-hook-form";
-import { userSchema, type UserFormSchema } from "../../../../schemas/userSchema";
+import { userSchema, type UserFormSchema } from "../../../lib/schemas/userSchema";
 
 import Step1_IdInformation from "./steps/Step1_IdInformation";
 import Step2_AddressInfo from "./steps/Step2_AddressInfo";
