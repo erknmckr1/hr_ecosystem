@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HomeIcon, User, LogOut } from "lucide-react";
+import { Hammer} from "lucide-react";
+
 import {
   Accordion,
   AccordionItem,
@@ -30,7 +32,17 @@ const groups = [
       { label: "Personel Listesi", href: "/personel-islemleri/liste" },
     ],
   },
+  {
+    type: "group",
+    id: "uretim",
+    label: "Üretim İşlemleri",
+    icon: <Hammer className="w-5 h-5" />, 
+    items: [
+      { label: "Üretim Ekranları", href: "/uretimekranlari" }, 
+    ],
+  },
 ] as const;
+
 
 export default function Sidebar() {
   const pathname = usePathname();

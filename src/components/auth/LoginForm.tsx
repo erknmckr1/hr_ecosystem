@@ -54,10 +54,14 @@ export default function LoginForm() {
       toast.error("Giriş başarısız. ID veya şifre hatalı.");
       return;
     }
+
+    router.push("/")
+    
     toast.success("Hoş geldiniz!");
-    router.push(callbackUrl);
-    router.refresh();
-  };
+  
+  // 1 saniye bekle, sonra yönlendir
+};
+
 
   return (
     <Card className="shadow-sm">

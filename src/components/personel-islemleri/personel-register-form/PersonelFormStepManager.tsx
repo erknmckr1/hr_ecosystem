@@ -70,7 +70,7 @@ export default function PersonelFormStepManager() {
   const ok = await trigger([...(fieldsForStep)] as FieldPath<User>[], {
     shouldFocus: true,
   });
-  console.log("a");
+ 
     if (!ok) return;
     if (currentStep < totalSteps - 1) setCurrentStep((s) => s + 1);
   };
