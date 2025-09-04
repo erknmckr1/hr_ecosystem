@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-//import { getUsers, type User } from "@/services/users";//
 import { sections, sectionParts, titles } from "@/lib/data/staticData";
 import { getUsers, updateUser, type User } from "@/services/users";
+import { Search } from "lucide-react";
+
 
 import {
   Table,
@@ -56,7 +57,7 @@ export default function PersonelListesiPage() {
       const data = await getUsers();
       setUsers(data);
     } catch (err) {
-      console.error("Kullanıcıları çekerken hata oluştu:", err); // 🔴 hatayı konsola yaz
+      console.error("Kullanıcıları çekerken hata oluştu:", err); 
       setError("Veri alınırken hata oluştu."); // ekranda basit mesaj
     } finally {
       setLoading(false);
@@ -118,12 +119,13 @@ const handleSave = async () => {
       <h1 className="text-2xl font-semibold mb-4">Personel Listesi</h1>
       <div className="w-full h-full flex justify-center ">
         <Card className=" w-[1200px] max-h-120 p-4">
-          <div className="h-10 ">
+          <div className="h-10 relative w-40">
             <Input
               onChange={(e) => setSearch(e.target.value)}
-              className="w-40"
-              placeholder="Search"
+              placeholder="Ara..."
+              className="pl-8"
             />
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" size={16} />
           </div>
           <Table>
             <TableHeader>
@@ -188,7 +190,6 @@ const handleSave = async () => {
         </Card>
         
 
-        {/* Shadcn Dialog */}
         <Dialog open={isPopupOpen} onOpenChange={setIsPopupOpen}>
           <DialogContent className="max-h-[80vh] overflow-y-auto">
             <DialogHeader>
@@ -307,7 +308,7 @@ const handleSave = async () => {
               </Button>
             </DialogFooter>
           </DialogContent>
-        </Dialog>
+        </Dialog> 
 
 
         
