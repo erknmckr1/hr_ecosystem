@@ -6,6 +6,7 @@ export const personelFormConfig = [
       "id_dec",
       "id_hex",
       "short_name",
+      "title",
       "gender",
       "op_name",
       "op_username",
@@ -32,7 +33,7 @@ export const personelFormConfig = [
       "is_active",
       "is_approver",
       "shift_validator",
-      "title",
+      
     ],
     skippable: false,
     component: "Step3_RoleInfo",

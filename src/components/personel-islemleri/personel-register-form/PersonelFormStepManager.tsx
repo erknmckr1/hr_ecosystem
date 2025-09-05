@@ -8,13 +8,14 @@ import { createUser, type User } from "@/services/users";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Resolver } from "react-hook-form";
-import { userSchema, type UserFormSchema } from "../../../lib/schemas/userSchema";
+import {userSchema,type UserFormSchema,} from "../../../lib/schemas/userSchema";
+
 
 import Step1_IdInformation from "./steps/Step1_IdInformation";
 import Step2_AddressInfo from "./steps/Step2_AddressInfo";
 import Step3_RoleInfo from "./steps/Step3_RoleInfo";
 import Step4_ManagerInfo from "./steps/Step4_ManagerInfo";
-
+import Chatbot from "@/components/Chatbot";
 
 const stepComponents = {
   Step1_IdInformation,
@@ -23,14 +24,13 @@ const stepComponents = {
   Step4_ManagerInfo,
 } as const;
 
-
 export default function PersonelFormStepManager() {
   const [currentStep, setCurrentStep] = useState(0);
 
   // Controlled alanlar için güvenli defaultlar
   const methods = useForm<User>({
-      resolver: zodResolver(userSchema) as Resolver<User>,
-     defaultValues: {
+    resolver: zodResolver(userSchema) as Resolver<User>,
+    defaultValues: {
       id_dec: "",
       id_hex: "",
       short_name: "",
@@ -52,7 +52,7 @@ export default function PersonelFormStepManager() {
       auth1: "",
       auth2: "",
       izin_bakiye: 0,
-      roleId: 0
+      roleId: 0,
     },
     mode: "all",
   });
@@ -65,12 +65,11 @@ export default function PersonelFormStepManager() {
   const progress = Math.round(((currentStep + 1) / totalSteps) * 100);
   const fieldsForStep = useMemo(() => steps[currentStep].fields, [currentStep]);
 
-
   const handleNextStep = async () => {
-  const ok = await trigger([...(fieldsForStep)] as FieldPath<User>[], {
-    shouldFocus: true,
-  });
- 
+    const ok = await trigger([...fieldsForStep] as FieldPath<User>[], {
+      shouldFocus: true,
+    });
+
     if (!ok) return;
     if (currentStep < totalSteps - 1) setCurrentStep((s) => s + 1);
   };
@@ -81,7 +80,7 @@ export default function PersonelFormStepManager() {
 
   const onSubmit = async (data: User) => {
     const user: User = {
-      id:0,
+      id: 0,
       ...data,
       roleId: Number(data.roleId),
     };
@@ -151,6 +150,7 @@ export default function PersonelFormStepManager() {
                 </Button>
               )}
             </div>
+           <Chatbot/>
           </CardFooter>
         </Card>
       </form>
