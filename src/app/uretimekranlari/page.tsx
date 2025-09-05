@@ -34,6 +34,17 @@ const iconMap: Record<string, React.ReactNode> = {
   Cila: <Sparkle size={28} weight="duotone" className="text-yellow-500" />,
 };
 
+const handleCopy = (url: string) => {
+  console.log("Kopyalanacak URL:", url); 
+  navigator.clipboard.writeText(url)
+    .then(() => {
+      alert("Bağlantı kopyalandı!");
+    })
+    .catch(() => {
+      alert("Bağlantı kopyalanırken hata oluştu");
+    });
+};
+
 export default function UretimIslemleriPage() {
   const [viewMode, setViewMode] = useState<"list" | "card">("list");
   const [search, setSearch] = useState("");
@@ -68,9 +79,9 @@ export default function UretimIslemleriPage() {
 
     
       {viewMode === "list" ? (
-        <PageList pages={filteredPages} iconMap={iconMap} />
+        <PageList pages={filteredPages} iconMap={iconMap} onCopy={handleCopy} />
       ) : (
-        <PageCardGrid pages={filteredPages} iconMap={iconMap} />
+        <PageCardGrid pages={filteredPages} iconMap={iconMap} onCopy={handleCopy}/>
       )}
     </div>
   );
