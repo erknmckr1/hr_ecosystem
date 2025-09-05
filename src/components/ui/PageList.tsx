@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Copy } from "lucide-react";
 
 type Page = {
   id: string;
@@ -12,27 +13,44 @@ type Page = {
 type Props = {
   pages: Page[];
   iconMap?: Record<string, React.ReactNode>;
+  onCopy?: (url: string) => void;
 };
 
-export function PageList({ pages, iconMap = {} }: Props) {
+export function PageList({ pages, iconMap = {}, onCopy }: Props) {
   return (
     <ul className="space-y-2">
       {pages.map((page) => (
-        <li key={page.id}>
-          <Link
-            href={page.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block px-4 py-2 rounded-md border hover:bg-primary/10 hover:text-primary transition"
-          >
+        <li
+          key={page.id}
+          className="flex items-center justify-between px-4 py-3 rounded-md border hover:bg-primary/10 transition"
+        >
+          {/* Sol taraf (ikon + içerik) */}
+          <div>
             <div className="flex items-center gap-2 font-medium">
               {iconMap[page.label]}
-              {page.label}
+              <Link
+                href={page.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                {page.label}
+              </Link>
             </div>
             <div className="text-sm text-muted-foreground">{page.desc}</div>
-          </Link>
+          </div>
+
+          {/* Sağ taraf (kopyalama butonu) */}
+          <button
+            onClick={() => onCopy?.(page.href)}
+            className="p-2 rounded-md hover:bg-accent hover:text-accent-foreground transition"
+            title="Bağlantıyı kopyala"
+          >
+            <Copy size={18} />
+          </button>
         </li>
       ))}
     </ul>
   );
 }
+
