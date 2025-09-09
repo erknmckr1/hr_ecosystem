@@ -22,7 +22,7 @@ function ConditionalLayout({ children }: { children: React.ReactNode }) {
       <Sidebar />
       <div className="flex-1 ">
         <Header />
-        <main className="min-h-[calc(100vh-80px)]  ">{children}</main>
+        <main className="min-h-[calc(100vh-80px)] w-full  ">{children}</main>
       </div>{" "}
     </div>
   );

@@ -25,30 +25,30 @@ export type User = {
 };  
 
 
-import api from "./api";
+import axiosInstance from "./axiosInstance";
 
 const BASE_URL = "/users_api/users";
 
 export const getUsers = async (): Promise<User[]> => {
-  const res = await api.get<User[]>(BASE_URL);
+  const res = await axiosInstance.get<User[]>(BASE_URL);
   return res.data;
 };
 
 export const getUserById = async (id: number): Promise<User> => {
-  const res = await api.get<User>(`${BASE_URL}/${id}`);
+  const res = await axiosInstance.get<User>(`${BASE_URL}/${id}`);
   return res.data;
 };
 
 export const updateUser = async (user: User): Promise<User> => {
-  const res = await api.put<User>(BASE_URL, user);
+  const res = await axiosInstance.put<User>(BASE_URL, user);
   return res.data;
 };
 
 export const deleteUser = async (id_dec: number, id_hex: string): Promise<void> => {
-  await api.delete(`${BASE_URL}/${id_dec}/${id_hex}`);
+  await axiosInstance.delete(`${BASE_URL}/${id_dec}/${id_hex}`);
 };
 
 export const createUser = async (user: User): Promise<User> => {
-  const res = await api.post<User>(BASE_URL, user);
+  const res = await axiosInstance.post<User>(BASE_URL, user);
   return res.data;
 };

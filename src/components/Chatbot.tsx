@@ -14,30 +14,30 @@ export default function Chatbot() {
   const [input, setInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
+  // const sendMessage = async () => {
+  //   if (!input.trim()) return;
 
-    const userMessage: Message = { role: "user", content: input };
-    setMessages((prev) => [...prev, userMessage]);
-      setInput("");
+  //   const userMessage: Message = { role: "user", content: input };
+  //   setMessages((prev) => [...prev, userMessage]);
+  //     setInput("");
 
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: input }),
-    });
+  //   const res = await fetch("/api/chat", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ message: input }),
+  //   });
 
-    const data = await res.json();
+  //   const data = await res.json();
 
-    const assistantMessage: Message = {
-      role: "assistant",
-      content: data.reply || "Bir cevap döndü...",
-    };
-    console.log(data.reply);
+  //   const assistantMessage: Message = {
+  //     role: "assistant",
+  //     content: data.reply || "Bir cevap döndü...",
+  //   };
+  //   console.log(data.reply);
 
-    setMessages((prev) => [...prev, assistantMessage]);
+  //   setMessages((prev) => [...prev, assistantMessage]);
    
-  };
+  // };
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
@@ -65,7 +65,7 @@ export default function Chatbot() {
           </div>
 
           {/* Mesajlar */}
-          <div className="flex-1 overflow-y-auto space-y-3 p-3 font-sans text-sm">
+          {/* <div className="flex-1 overflow-y-auto space-y-3 p-3 font-sans text-sm">
             {messages.map((msg, idx) => (
               <div
                 key={idx}
@@ -87,7 +87,7 @@ export default function Chatbot() {
                 </div>
               </div>
             ))}
-          </div>
+          </div> */}
 
           {/* Input alanı */}
           <div className="flex gap-2 border-t p-2">
@@ -97,13 +97,13 @@ export default function Chatbot() {
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  sendMessage();
+                  // sendMessage();
                 }
               }}
               placeholder="Mesajınızı yazın..."
               className="flex-1 rounded-full"
             />
-            <Button onClick={sendMessage} className="rounded-full">
+            <Button className="rounded-full">
               Gönder
             </Button>
           </div>

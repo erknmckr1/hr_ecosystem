@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
-import {prisma} from "@/lib/dbInstance";
+import { prisma } from "@/lib/dbInstance";
 import { User } from "@/services/users";
 // MSSQL'deki user tablosundan tüm kayıtları al
 export async function GET() {
   try {
-    const users = await prisma.operator_table.findMany();
+    const users = await prisma.operator_table.findMany({
+      where: {
+        is_active: 1,
+      },
+    });
     return NextResponse.json(users);
   } catch (error) {
     console.error("DB connection error:", error);
@@ -43,6 +47,8 @@ export async function PUT(req: Request) {
         route: data.route,
         stop_name: data.stop_name,
         izin_bakiye: data.izin_bakiye,
+        auth1: data.auth1,
+        auth2: data.auth2,
       },
     });
     return NextResponse.json(updatedUser);
@@ -81,7 +87,6 @@ export async function DELETE(
 export async function POST(req: Request) {
   try {
     const data: User = await req.json();
-  
 
     const createdUser = await prisma.operator_table.create({
       data: {

@@ -227,10 +227,6 @@ export const titles = [
   { id: 28, name: "Yalın Uretim Yoneticisi" },
 ];
 
-
-
-
-
 export const pages = [
   {
     label: "Ana Sayfa",

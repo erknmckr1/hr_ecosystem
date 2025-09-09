@@ -1,78 +1,48 @@
 "use client";
-import { useEffect, useState } from "react";
-import { sections, sectionParts, titles } from "@/lib/data/staticData";
+import { useEffect, useState, useMemo } from "react";
 import { getUsers, updateUser, type User } from "@/services/users";
-import { Search } from "lucide-react";
-
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import UserTable from "./components/UserTable";
 import { Card } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-
+import UserUpdateDialog from "./components/UserUpdateDialog";
+import { sendMail } from "@/services/mail";
+import SearchBar from "./components/SearchBar";
+import { normalizeText, sortUsersBySelection } from "./utils/userHelpers";
 
 export default function PersonelListesiPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [editUser, setEditUser] = useState<User | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [formData, setFormData] = useState<User | null>(null);
-
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
 
   useEffect(() => {
-    if (selectedUser) {
-      setFormData(selectedUser);
+    if (editUser) {
+      setFormData(editUser);
     }
-  }, [selectedUser]);
+  }, [editUser]);
 
   const handleChange = (field: keyof User, value: any) => {
     setFormData((prev) => (prev ? { ...prev, [field]: value } : prev));
   };
- 
-
-
 
   useEffect(() => {
-  const load = async () => {
-    try {
-      const data = await getUsers();
-      setUsers(data);
-    } catch (err) {
-      console.error("Kullanıcıları çekerken hata oluştu:", err); 
-      setError("Veri alınırken hata oluştu."); // ekranda basit mesaj
-    } finally {
-      setLoading(false);
-    }
-  };
-  load();
-}, []);
-
-
-
-  if (loading) return <div className="p-4">Yükleniyor…</div>;
-  if (error) return <div className="p-4 text-red-500">{error}</div>;
-
-  const normalizeText = (text: string) =>
-    text?.toLocaleLowerCase("tr").replace(/\s+/g, " ").trim();
+    const load = async () => {
+      try {
+        const data = await getUsers();
+        setUsers(data);
+      } catch (err) {
+        console.error("Kullanıcıları çekerken hata oluştu:", err);
+        setError("Veri alınırken hata oluştu."); // ekranda basit mesaj
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
   const filteredUsers = users
     .filter((u) => {
@@ -86,232 +56,120 @@ export default function PersonelListesiPage() {
         normalizeText(u.title || "").includes(query)
       );
     })
-    .sort((a, b) => (a.op_name  || "").localeCompare(b.op_name || "", "tr"));
+    .sort((a, b) => (a.op_name || "").localeCompare(b.op_name || "", "tr"));
 
-  const handleRowClick = (user: User) => {
-  if (selectedUser?.id_dec === user.id_dec) {
-    setIsPopupOpen(true);
-  } else {
-    setSelectedUser(user);
+  if (loading) return <div className="p-4">Yükleniyor…</div>;
+  if (error) return <div className="p-4 text-red-500">{error}</div>;
+
+  // doubleClick ile update popup ı acacak fonksiyon...
+  const handleUpdateUser = (user: User) => {
+    setEditUser(user);
     setFormData(user);
-  }
-};
+    setIsPopupOpen(true);
+  };
 
-const handleSave = async () => {
-  if (!formData) return;
-  try {
-    const updated = await updateUser(formData);
-    
-    setUsers((prev) =>
-      prev.map((u) => (u.id_dec=== updated.id_dec? updated : u))
-    );
-    setIsPopupOpen(false);
-    setSelectedUser(null);
-    setFormData(null);
-  } catch (err) {
-    console.error("Güncelleme hatası:", err);
-    alert("Güncelleme sırasında hata oluştu!");
-  }
-};
+  const handleSelectedUsers = (user: User) => {
+    setSelectedUsers((prev) => {
+      const exist = prev.some((u) => u.id_dec === user.id_dec);
+
+      if (exist) {
+        return prev.filter((u) => u.id_dec !== user.id_dec);
+      } else {
+        return [...prev, user];
+      }
+    });
+  };
+
+  //! Mail gönderme isteği
+  const handleSendMail = async (selectedUsers: User[]) => {
+    try {
+      if (selectedUsers.length === 0) {
+        toast.error("Mail ile yollayacağınız kullanıcıları seçiniz.");
+        return;
+      }
+      const users = selectedUsers.map((u) => ({
+        id_dec: u.id_dec,
+        id_hex: u.id_hex,
+        op_name: u.op_name,
+        op_username: u.op_username,
+        part: u.part,
+        e_mail: u.e_mail,
+        op_section: u.op_section,
+        title: u.title,
+      }));
+
+      const response = await sendMail(users);
+
+      if (response.status === 200) {
+        toast.success("Mail başarıyla gönderildi!");
+        setSelectedUsers([]);
+      } else {
+        toast.error("Mail gönderilemedi: " + response.data.error);
+      }
+    } catch (err) {
+      console.error("Mail gönderme hatası:", err);
+      toast.error("Mail gönderme sırasında bir hata oluştu!");
+    }
+  };
+
+  const handleSave = async () => {
+    if (!formData) return;
+    try {
+      const updated = await updateUser(formData);
+
+      setUsers((prev) =>
+        prev.map((u) => (u.id_dec === updated.id_dec ? updated : u))
+      );
+      toast.success("Personel bilgileri başarıyla güncellendi.");
+      setIsPopupOpen(false);
+      setEditUser(null);
+      setFormData(null);
+    } catch (err) {
+      console.error("Güncelleme hatası:", err);
+      toast.error("Güncelleme sırasında hata oluştu!");
+    }
+  };
+
+  // seçilen kullanıcıları listenin başına tasıyacak sıralama fonksiyonu
+  const sortedUsers = sortUsersBySelection(filteredUsers, selectedUsers);
 
   return (
     <div className=" p-6 w-full">
-      <h1 className="text-2xl font-semibold mb-4">Personel Listesi</h1>
       <div className="w-full h-full flex justify-center ">
-        <Card className=" w-[1200px] max-h-120 p-4">
-          <div className="h-10 relative w-40">
-            <Input
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Ara..."
-              className="pl-8"
-            />
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" size={16} />
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>ID (DEC)</TableHead>
-                <TableHead>ID (HEX)</TableHead>
-                <TableHead>Ad Soyad</TableHead>
-                <TableHead>Kullanıcı Adı</TableHead>
-                <TableHead>Bölüm</TableHead>
-                <TableHead>Part</TableHead>
-                <TableHead>Ünvan</TableHead>
-                <TableHead>Adres</TableHead>
-                <TableHead>E-Posta</TableHead>
-                <TableHead>Rota</TableHead>
-                <TableHead>Durak</TableHead>
-                <TableHead>İzin Bakiye</TableHead>
-              
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredUsers.map((u) => (
-                <TableRow
-                  key={`${u.id_dec}-${u.id_hex}`}
-                  onClick={() => handleRowClick(u)}
-                  className={`cursor-pointer transition-colors ${ selectedUser?.id_dec === u.id_dec 
-                     ? "bg-blue-100 border-2 border-blue-400" : "" }`} >
-                  <TableCell>{u.id_dec}</TableCell>
-                  <TableCell>{u.id_hex}</TableCell>
-                  <TableCell>{u.op_name}</TableCell>
-                  <TableCell>{u.op_username}</TableCell>
-                  <TableCell>{u.op_section}</TableCell>
-                  <TableCell>{u.part}</TableCell>
-                  <TableCell>{u.title}</TableCell>
-                  <TableCell>{u.address}</TableCell>
-                  <TableCell>{u.e_mail}</TableCell>
-                  <TableCell>{u.route}</TableCell>
-                  <TableCell>{u.stop_name}</TableCell>
-                  <TableCell>{u.izin_bakiye}</TableCell>
+        <Card className="2xl:w-[1400px] xl:w-[1200px] lg:w-[1200px] md:w-[1000px] sm:w-[600px] w-[400px]  max-h-180 mx-auto p-4">
+          <h1 className="text-2xl font-semibold mb-4">Personel Listesi</h1>
+          {/* search bar */}
+          <SearchBar
+            value={search}
+            onChange={setSearch}
+            onClearSelected={() => setSelectedUsers([])}
+            onSendMail={() => handleSendMail(selectedUsers)} //
+          />
 
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
+          {/* User Table */}
+          <UserTable
+            editUser={editUser}
+            handleSelectedUsers={handleSelectedUsers}
+            handleUpdateUser={handleUpdateUser}
+            filteredUsers={sortedUsers}
+            selectedUsers={selectedUsers}
+          />
           <div className="h-10 p-2 flex justify-between items-center ">
             <span className="text-sm text-blue-700">
               {search
                 ? `Filtrelenen kayıtlar: ${filteredUsers.length} / Toplam: ${users.length}`
                 : `Toplam kayıt: ${users.length}`}
             </span>
-            <div>
-              <div className="flex items-center gap-2">
-                <button className="p-1 hover:bg-gray-200 rounded">
-                  <ChevronLeft size={16} />
-                </button>
-                <button className="p-1 hover:bg-gray-200 rounded">
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            </div>
           </div>
         </Card>
-        
-
-        <Dialog open={isPopupOpen} onOpenChange={setIsPopupOpen}>
-          <DialogContent className="max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Personel Bilgilerini Güncelle</DialogTitle>
-            </DialogHeader>
-
-            {formData && (
-              <div className="space-y-3">
-                <label className="block text-sm font-medium">Ad Soyad</label>
-                <Input
-                  type="text"
-                  value={formData.op_name || ""}
-                  onChange={(e) => handleChange("op_name", e.target.value)}
-                />
-
-                <label className="block text-sm font-medium">
-                  Kullanıcı Adı
-                </label>
-                <Input
-                  type="text"
-                  value={formData.op_username || ""}
-                  onChange={(e) => handleChange("op_username", e.target.value)}
-                />
-
-                <label className="block text-sm font-medium">E-Posta</label>
-                <Input
-                  type="email"
-                  value={formData.e_mail || ""}
-                  onChange={(e) => handleChange("e_mail", e.target.value)}
-                />
-
-                <label className="block text-sm font-medium">Bölüm</label>
-                <select
-                  value={formData.op_section || ""}
-                  onChange={(e) => handleChange("op_section", e.target.value)}
-                  className="w-full border px-2 py-1 rounded"
-                >
-                  <option value="">Seçiniz</option>
-                  {sections.map((s) => (
-                    <option key={s.id} value={s.name}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-
-                <label className="block text-sm font-medium">Part</label>
-                <select
-                  value={formData.part}
-                  onChange={(e) => handleChange("part", e.target.value)}
-                  className="w-full border px-2 py-1 rounded"
-                  disabled={!formData.op_section}
-                >
-                  <option value="">Seçiniz</option>
-                  {sectionParts
-                    .find((sp) => sp.section === formData.op_section)
-                    ?.parts.map((p, index) => (
-                      <option key={index} value={p}>
-                        {p}
-                      </option>
-                    ))}
-                </select>
-
-                <label className="block text-sm font-medium">Ünvan</label>
-                <select
-                  value={formData.title || ""}
-                  onChange={(e) => handleChange("title", e.target.value)}
-                  className="w-full border px-2 py-1 rounded"
-                >
-                  <option value="">Seçiniz</option>
-                  {titles.map((t) => (
-                    <option key={t.id} value={t.name}>
-                      {t.name}
-                    </option>
-                  ))}
-
-                </select>
-
-                <label className="block text-sm font-medium">Adres</label>
-                <Input
-                  type="text"
-                  value={formData.address || ""}
-                  onChange={(e) => handleChange("address", e.target.value)}
-                />
-
-                <label className="block text-sm font-medium">Rota</label>
-                <Input
-                  type="text"
-                  value={formData.route || ""}
-                  onChange={(e) => handleChange("route", e.target.value)}
-                />
-
-                <label className="block text-sm font-medium">Durak</label>
-                <Input
-                  type="text"
-                  value={formData.stop_name || ""}
-                  onChange={(e) => handleChange("stop_name", e.target.value)}
-                />
-
-                <label className="block text-sm font-medium">İzin Bakiye</label>
-                <Input
-                  type="number"
-                  value={formData.izin_bakiye || ""}
-                  onChange={(e) =>
-                    handleChange("izin_bakiye", Number(e.target.value))
-                  }
-                />
-              </div>
-            )}
-
-            <DialogFooter className="mt-4">
-              <Button variant="secondary" onClick={() => setIsPopupOpen(false)}>
-                Kapat
-              </Button>
-              <Button onClick={handleSave}>
-                Kaydet
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog> 
-
-
-        
+        {/* update popup */}
+        <UserUpdateDialog
+          isOpen={isPopupOpen}
+          onClose={() => setIsPopupOpen(false)}
+          formData={formData}
+          onChange={handleChange}
+          onSave={handleSave}
+        />
       </div>
     </div>
   );
